@@ -6,6 +6,7 @@
 		size_hint_y: None
 		height: 200
 		text: 'default'
+		on_text: root.change_label_color()
 	FloatLayout:
 		Scatter:
 			Label:
