@@ -1,11 +1,11 @@
 import thread
-from ChatFns import * 
+from chat_functions import * 
 
 #---------------------------------------------------#
 #---------INITIALIZE CONNECTION VARIABLES-----------#
 #---------------------------------------------------#
 WindowTitle = 'JChat v0.1 - Client'
-HOST = "YOUR EXTERNAL IP ADDRESS HERE"
+HOST = '198.189.249.62'
 PORT = 8011
 s = socket(AF_INET, SOCK_STREAM)
 
@@ -24,7 +24,7 @@ def ClickAction():
     EntryBox.delete("0.0",END)
             
     #Send my mesage to all others
-    s.sendall(EntryText)
+    s.send(EntryText)
     
 #---------------------------------------------------#
 #----------------- KEYBOARD EVENTS -----------------#

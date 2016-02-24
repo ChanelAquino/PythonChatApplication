@@ -5,7 +5,7 @@ from chat_functions import *
 #---------INITIALIZE CONNECTION VARIABLES-----------#
 #---------------------------------------------------#
 WindowTitle = 'JChat v0.1 - Client'
-HOST = "YOUR EXTERNAL IP ADDRESS HERE"
+HOST = '198.189.249.62'
 PORT = 8011
 s = socket(AF_INET, SOCK_STREAM)
 

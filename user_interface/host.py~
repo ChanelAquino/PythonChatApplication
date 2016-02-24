@@ -31,7 +31,7 @@ def ClickAction():
     EntryBox.delete("0.0",END)
             
     #Send my mesage to all others
-    conn.sendall(EntryText)
+    conn.send(EntryText)
     
 	
 #---------------------------------------------------#
