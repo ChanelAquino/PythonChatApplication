@@ -4,7 +4,7 @@ import socket
 import select
 
 def chat_client():
-    if(len(sys.argv) < 3) :
+    if(len(sys.argv) < 3) : #if try to launch without proper args
         print 'Usage : python chat_client.py hostname port'
         sys.exit()
 
@@ -22,7 +22,10 @@ def chat_client():
         sys.exit()
 
     print 'Connected to remote host. You can start sending messages'
-    sys.stdout.write('[Me] '); sys.stdout.flush()
+    username = raw_input('Please enter your desired display name: ')
+
+    sys.stdout.write('[Me]'); sys.stdout.flush()
+
 
     while 1:
         socket_list = [sys.stdin, s]
