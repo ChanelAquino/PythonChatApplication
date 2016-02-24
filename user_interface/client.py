@@ -1,5 +1,5 @@
 import thread
-from ChatFns import * 
+from chat_functions import * 
 
 #---------------------------------------------------#
 #---------INITIALIZE CONNECTION VARIABLES-----------#

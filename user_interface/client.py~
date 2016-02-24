@@ -1,20 +1,13 @@
 import thread
-from chat_functions import *
-
-
+from ChatFns import * 
 
 #---------------------------------------------------#
 #---------INITIALIZE CONNECTION VARIABLES-----------#
 #---------------------------------------------------#
-#Initiate socket and bind port to host PC
-WindowTitle = 'JChat v0.1 - Host'
-s = socket(AF_INET, SOCK_STREAM)
-HOST = gethostname()
+WindowTitle = 'JChat v0.1 - Client'
+HOST = "YOUR EXTERNAL IP ADDRESS HERE"
 PORT = 8011
-conn = ''
-s.bind((HOST, PORT))
-
-
+s = socket(AF_INET, SOCK_STREAM)
 
 #---------------------------------------------------#
 #------------------ MOUSE EVENTS -------------------#
@@ -31,9 +24,8 @@ def ClickAction():
     EntryBox.delete("0.0",END)
             
     #Send my mesage to all others
-    conn.sendall(EntryText)
+    s.sendall(EntryText)
     
-	
 #---------------------------------------------------#
 #----------------- KEYBOARD EVENTS -----------------#
 #---------------------------------------------------#
@@ -42,10 +34,8 @@ def PressAction(event):
 	ClickAction()
 def DisableEntry(event):
 	EntryBox.config(state=DISABLED)
-
     
-
-
+    
 #---------------------------------------------------#
 #-----------------GRAPHICS MANAGEMENT---------------#
 #---------------------------------------------------#
@@ -58,7 +48,7 @@ base.resizable(width=FALSE, height=FALSE)
 
 #Create a Chat window
 ChatLog = Text(base, bd=0, bg="white", height="8", width="50", font="Arial",)
-ChatLog.insert(END, "Waiting for your partner to connect..\n")
+ChatLog.insert(END, "Connecting to your partner..\n")
 ChatLog.config(state=DISABLED)
 
 #Bind a scrollbar to the Chat window
@@ -82,32 +72,36 @@ EntryBox.place(x=128, y=401, height=90, width=265)
 SendButton.place(x=6, y=401, height=90)
 
 
-
 #---------------------------------------------------#
 #----------------CONNECTION MANAGEMENT--------------#
 #---------------------------------------------------#
-def GetConnected():
-    s.listen(1)
-    global conn
-    conn, addr = s.accept()
-    LoadConnectionInfo(ChatLog, 'Connected with: ' + str(addr) + '\n---------------------------------------------------------------')
+
+def ReceiveData():
+    try:
+        s.connect((HOST, PORT))
+        LoadConnectionInfo(ChatLog, '[ Succesfully connected ]\n---------------------------------------------------------------')
+    except:
+        LoadConnectionInfo(ChatLog, '[ Unable to connect ]')
+        return
     
     while 1:
         try:
-            data = conn.recv(1024)
+            data = s.recv(1024)
+        except:
+            LoadConnectionInfo(ChatLog, '\n [ Your partner has disconnected ] \n')
+            break
+        if data != '':
             LoadOtherEntry(ChatLog, data)
             if base.focus_get() == None:
                 FlashMyWindow(WindowTitle)
                 playsound('notif.wav')
-        except:
-            LoadConnectionInfo(ChatLog, '\n [ Your partner has disconnected ]\n [ Waiting for him to connect..] \n  ')
-            GetConnected()
-
-    conn.close()
+                
+        else:
+            LoadConnectionInfo(ChatLog, '\n [ Your partner has disconnected ] \n')
+            break
+    #s.close()
     
-thread.start_new_thread(GetConnected,())
-
-
+    
+thread.start_new_thread(ReceiveData,())
 
 base.mainloop()
-
