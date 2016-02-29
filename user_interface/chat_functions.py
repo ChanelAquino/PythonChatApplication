@@ -2,8 +2,9 @@ from Tkinter import *
 from socket import *
 import urllib
 import re
-import pygame
+#import pygame
 
+"""
 def getmixerargs():
     pygame.mixer.init()
     freq, size, chan = pygame.mixer.get_init()
@@ -13,20 +14,21 @@ def initMixer():
     FREQ, SIZE, CHAN = getmixerargs()
     pygame.mixer.init(FREQ, SIZE, CHAN, BUFFER)
 def playsound(soundfile):
-    """Play sound through default mixer channel in blocking manner.
-       This will load the whole sound into memory before playback
-    """    
+
+       #Play sound through default mixer channel in blocking manner.
+       #This will load the whole sound into memory before playback
+
     pygame.init()
     pygame.mixer.init()
     sound = pygame.mixer.Sound(soundfile)
     clock = pygame.time.Clock()
     sound.play()
     while pygame.mixer.get_busy():
-        clock.tick(1000)        
+        clock.tick(1000)
 def playmusic(soundfile):
-    """Stream music with mixer.music module in blocking manner.
-       This will stream the sound from disk while playing.
-    """
+    #Stream music with mixer.music module in blocking manner.
+      # This will stream the sound from disk while playing.
+
     pygame.init()
     pygame.mixer.init()
     clock = pygame.time.Clock()
@@ -35,12 +37,13 @@ def playmusic(soundfile):
     while pygame.mixer.music.get_busy():
         clock.tick(1000)
 def stopmusic():
-    """stop currently playing music"""
+    #stop currently playing music
     pygame.mixer.music.stop()
 
 #HOW TO PLAY SONG:
 initMixer()
 #playmusic(filename)
+"""
 
 def GetExternalIP():
     url = "http://checkip.dyndns.org"
@@ -49,7 +52,7 @@ def GetExternalIP():
 
 def GetInternalIP():
     return str(gethostbyname(getfqdn()))
-    
+
 def FilteredMessage(EntryText):
     """
     Filter out all useless white lines at the end of a string,
@@ -64,7 +67,7 @@ def FilteredMessage(EntryText):
             if EndFiltered[i] != "\n":
                     return EndFiltered[i:]+'\n'
     return ''
-    
+
 def LoadConnectionInfo(ChatLog, EntryText):
     if EntryText != '':
         ChatLog.config(state=NORMAL)
@@ -87,7 +90,7 @@ def LoadMyEntry(ChatLog, EntryText):
 
 def LoadOtherEntry(ChatLog, EntryText):
     if EntryText != '':
-        ChatLogls.config(state=NORMAL)
+        ChatLog.config(state=NORMAL)
         if ChatLog.index('end') != None:
             try:
                 LineNumber = float(ChatLog.index('end'))-1.0

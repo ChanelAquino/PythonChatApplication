@@ -7,13 +7,12 @@ from chat_functions import *
 #---------INITIALIZE CONNECTION VARIABLES-----------#
 #---------------------------------------------------#
 #Initiate socket and bind port to host PC
-WindowTitle = 'JChat v0.1 - Host'
+WindowTitle = 'Pychat Host'
 s = socket(AF_INET, SOCK_STREAM)
 HOST = gethostname()
-PORT = 8011
+PORT = 1221
 conn = ''
 s.bind((HOST, PORT))
-
 
 
 #---------------------------------------------------#
@@ -29,11 +28,11 @@ def ClickAction():
 
     #Erace previous message in Entry Box
     EntryBox.delete("0.0",END)
-            
+
     #Send my mesage to all others
     conn.sendall(EntryText)
-    
-	
+
+
 #---------------------------------------------------#
 #----------------- KEYBOARD EVENTS -----------------#
 #---------------------------------------------------#
@@ -43,7 +42,7 @@ def PressAction(event):
 def DisableEntry(event):
 	EntryBox.config(state=DISABLED)
 
-    
+
 
 
 #---------------------------------------------------#
@@ -71,7 +70,7 @@ SendButton = Button(base, font=30, text="Send", width="12", height=5,
                     command=ClickAction)
 
 #Create the box to enter message
-EntryBox = Text(base, bd=0, bg="white",width="29", height="5", font="Arial")
+EntryBox = Text(base, bd=0, bg="blue",width="29", height="5", font="Arial")
 EntryBox.bind("<Return>", DisableEntry)
 EntryBox.bind("<KeyRelease-Return>", PressAction)
 
@@ -87,27 +86,27 @@ SendButton.place(x=6, y=401, height=90)
 #----------------CONNECTION MANAGEMENT--------------#
 #---------------------------------------------------#
 def GetConnected():
-    s.listen(1)
+    s.listen(2)
     global conn
     conn, addr = s.accept()
     LoadConnectionInfo(ChatLog, 'Connected with: ' + str(addr) + '\n---------------------------------------------------------------')
-    
+
     while 1:
         try:
             data = conn.recv(1024)
             LoadOtherEntry(ChatLog, data)
             if base.focus_get() == None:
                 FlashMyWindow(WindowTitle)
-                playsound('notif.wav')
+                    #playsound('notif.wav')
         except:
             LoadConnectionInfo(ChatLog, '\n [ Your partner has disconnected ]\n [ Waiting for him to connect..] \n  ')
             GetConnected()
-
+            
     conn.close()
-    
+
+
 thread.start_new_thread(GetConnected,())
 
 
 
 base.mainloop()
-

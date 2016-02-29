@@ -1,12 +1,12 @@
 import thread
-from chat_functions import * 
+from chat_functions import *
 
 #---------------------------------------------------#
 #---------INITIALIZE CONNECTION VARIABLES-----------#
 #---------------------------------------------------#
 WindowTitle = 'JChat v0.1 - Client'
-HOST = '198.189.249.62'
-PORT = 8011
+HOST = gethostname()
+PORT = 1221
 s = socket(AF_INET, SOCK_STREAM)
 
 #---------------------------------------------------#
@@ -22,10 +22,10 @@ def ClickAction():
 
     #Erace previous message in Entry Box
     EntryBox.delete("0.0",END)
-            
+
     #Send my mesage to all others
-    s.sendall(EntryText)
-    
+    s.send(EntryText)
+
 #---------------------------------------------------#
 #----------------- KEYBOARD EVENTS -----------------#
 #---------------------------------------------------#
@@ -34,8 +34,8 @@ def PressAction(event):
 	ClickAction()
 def DisableEntry(event):
 	EntryBox.config(state=DISABLED)
-    
-    
+
+
 #---------------------------------------------------#
 #-----------------GRAPHICS MANAGEMENT---------------#
 #---------------------------------------------------#
@@ -83,7 +83,7 @@ def ReceiveData():
     except:
         LoadConnectionInfo(ChatLog, '[ Unable to connect ]')
         return
-    
+
     while 1:
         try:
             data = s.recv(1024)
@@ -95,13 +95,13 @@ def ReceiveData():
             if base.focus_get() == None:
                 FlashMyWindow(WindowTitle)
                 playsound('notif.wav')
-                
+
         else:
             LoadConnectionInfo(ChatLog, '\n [ Your partner has disconnected ] \n')
             break
-    #s.close()
-    
-    
+    s.close()
+
+
 thread.start_new_thread(ReceiveData,())
 
 base.mainloop()
