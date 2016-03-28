@@ -1,12 +1,17 @@
+# -*- coding: utf-8 -*-
+
 import thread
+import tkMessageBox
+from tkFileDialog import askopenfilename
 from chat_functions import *
+from PIL import Image
 
 #---------------------------------------------------#
 #---------INITIALIZE CONNECTION VARIABLES-----------#
 #---------------------------------------------------#
 WindowTitle = 'Pychat Client'
 HOST = gethostname()
-PORT = 1225
+PORT = 8026
 s = socket(AF_INET, SOCK_STREAM)
 
 #---------------------------------------------------#
@@ -23,8 +28,26 @@ def ClickAction():
     #Erace previous message in Entry Box
     EntryBox.delete("0.0",END)
 
-    #Send my mesage to all others
-    s.send(EntryText)
+
+    if '/img' in EntryText:
+        s.send("Your partner is sending an image... /img")#do image stuff
+        #LoadMyEntry(ChatLog, "Please enter the path to your image:")
+        tkMessageBox.showinfo(title="Image Transfer", message="Click OK to Select Image")
+        Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+        filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
+        LoadMyEntry(ChatLog, "You selected " + filename)
+        s.send(filename)
+        fp = Image.open(filename)
+        LoadMyEntry(ChatLog, "Starting image transfer...")
+        while True:
+            strng = s.recv(512)
+            if not strng:
+                break
+            fp.write(strng)
+        fp.close()
+        LoadMyEntry(ChatLog, " Sending side stopped, problem must be on HOST side")
+    else:
+        s.send(EntryText) #Just send the message
 
 #---------------------------------------------------#
 #----------------- KEYBOARD EVENTS -----------------#
@@ -47,7 +70,7 @@ base.geometry("400x500")
 base.resizable(width=FALSE, height=FALSE)
 
 #Create a Chat window
-ChatLog = Text(base, bd=0, bg="white", height="8", width="50", font="Courier",)
+ChatLog = Text(base, bd=0, bg="white", height="8", width="50", font="Helvetica",)
 ChatLog.insert(END, "Connecting to your partner..\n")
 ChatLog.config(state=DISABLED)
 
@@ -56,7 +79,7 @@ scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="heart")
 ChatLog['yscrollcommand'] = scrollbar.set
 
 #Create the Button to send message
-SendButton = Button(base, font="Courier", text="SEND", width="50", height=5,
+SendButton = Button(base, font="Helvetica", text="Send", width="50", height=5,
                     bd=0, bg="#81A035", activebackground="#81A035", justify="center",
                     command=ClickAction)
 

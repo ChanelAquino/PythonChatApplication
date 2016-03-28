@@ -1,23 +1,16 @@
 import thread
 from chat_functions import *
+from PIL import Image
 
-
-
-#---------------------------------------------------#
-#---------INITIALIZE CONNECTION VARIABLES-----------#
-#---------------------------------------------------#
 #Initiate socket and bind port to host PC
 WindowTitle = 'Pychat Host'
 s = socket(AF_INET, SOCK_STREAM)
 HOST = gethostname()
-PORT = 1225
+PORT = 8026
 conn = ''
 s.bind((HOST, PORT))
 
 
-#---------------------------------------------------#
-#------------------ MOUSE EVENTS -------------------#
-#---------------------------------------------------#
 def ClickAction():
     #Write message to chat window
     EntryText = FilteredMessage(EntryBox.get("0.0",END))
@@ -42,9 +35,6 @@ def PressAction(event):
 def DisableEntry(event):
 	EntryBox.config(state=DISABLED)
 
-
-
-
 #---------------------------------------------------#
 #-----------------GRAPHICS MANAGEMENT---------------#
 #---------------------------------------------------#
@@ -54,24 +44,25 @@ base = Tk()
 base.title(WindowTitle)
 base.geometry("400x500")
 base.resizable(width=FALSE, height=FALSE)
+base.configure(bg="#34495e")
 
 #Create a Chat window
-ChatLog = Text(base, bd=0, bg="white", height="8", width="50", font="Courier",)
+ChatLog = Text(base, bd=0, bg="#2980b9", height="8", width="50", font="Helvetica",)
 ChatLog.insert(END, "Waiting for your partner to connect..\n")
 ChatLog.config(state=DISABLED)
 
 #Bind a scrollbar to the Chat window
-scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="heart")
+scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="heart", bg = "#34495e")
 ChatLog['yscrollcommand'] = scrollbar.set
 
 #Create the Button to send message
-SendButton = Button(base, font="Courier", text="SEND", width="50", height=5,
+SendButton = Button(base, font="Helvetica", text="SEND", width="50", height=5,
                     bd=0, bg="#81A035", activebackground="#81A035", justify="center",
                     command=ClickAction)
-                    
+
 
 #Create the box to enter message
-EntryBox = Text(base, bd=0, bg="white",width="29", height="5", font="Courier")
+EntryBox = Text(base, bd=0, bg="#e74c3c",width="29", height="5", font="Helvetica")
 EntryBox.bind("<Return>", DisableEntry)
 EntryBox.bind("<KeyRelease-Return>", PressAction)
 
@@ -96,18 +87,27 @@ def GetConnected():
         try:
             data = conn.recv(1024)
             LoadOtherEntry(ChatLog, data)
-            #if base.focus_get() == None:
-            #    FlashMyWindow(WindowTitle)
-                    #playsound('notif.wav')
+
         except:
             LoadConnectionInfo(ChatLog, '\n [ Your partner has disconnected ]\n [ Waiting for him to connect..] \n  ')
             GetConnected()
-            
+
+        if '/img' in ChatLog:
+            getImage()
+
     conn.close()
 
-
-thread.start_new_thread(GetConnected,())
-
-
-
+thread.start_new_thread(GetConnected,()) # try listening again upon fail
 base.mainloop()
+
+
+
+def getImage():
+    img = Image.open(data)
+    while True:
+        strng = img.readline(512)
+        if not strng:
+            break
+        s.send(strng)
+    img.close()
+    LoadMyEntry(ChatLog, img)

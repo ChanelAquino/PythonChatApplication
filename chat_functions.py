@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from Tkinter import *
 from socket import *
 import urllib
@@ -40,6 +41,13 @@ def LoadMyEntry(ChatLog, EntryText):
         ChatLog.config(state=NORMAL)
         if ChatLog.index('end') != None:
             LineNumber = float(ChatLog.index('end'))-1.0
+            #Trying to get emojis to work
+            '''
+            if "/shrug" in EntryText:
+                EntryText =  "¯\_(ツ)_/¯"
+            else:
+                EntryText = u'\U0001f63b'
+            '''
             ChatLog.insert(END, "YOU: " + EntryText)
             ChatLog.tag_add("YOU", LineNumber, LineNumber+0.4)
             ChatLog.tag_config("YOU", foreground="#AA3939", font=("Courier", 12, "bold"), justify = "right")
@@ -48,7 +56,7 @@ def LoadMyEntry(ChatLog, EntryText):
 
 
 def LoadOtherEntry(ChatLog, EntryText):
-    if EntryText != '': 
+    if EntryText != '':
         ChatLog.config(state=NORMAL)
         if ChatLog.index('end') != None:
             try:
