@@ -57,8 +57,9 @@ def LoadMyEntry(ChatLog, EntryText):
             ChatLog.tag_config("YOU", foreground="#AA3939", font=("Courier", 12, "bold"), justify = "right")
             
             
-            ChatLog.config(state=DISABLED)           
-            ChatLog.yview(END)
+            ChatLog.config(state=DISABLED)
+            #bumps scrollbar when Chatlog is filled with text            
+			ChatLog.yview(END)
 
 
 def LoadOtherEntry(ChatLog, EntryText):

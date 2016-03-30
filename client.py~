@@ -10,7 +10,7 @@ from PIL import Image
 #---------INITIALIZE CONNECTION VARIABLES-----------#
 #---------------------------------------------------#
 WindowTitle = 'Pychat Client'
-HOST = gethostname()
+HOST = '198.189.249.60'
 PORT = 9002
 s = socket(AF_INET, SOCK_STREAM)
 
