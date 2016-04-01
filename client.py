@@ -4,8 +4,9 @@ import thread
 import tkMessageBox
 from tkFileDialog import askopenfilename
 from chat_functions import *
-from PIL import Image
-
+from Tkinter import *
+from PIL import ImageTk, Image
+import os
 #---------------------------------------------------#
 #---------INITIALIZE CONNECTION VARIABLES-----------#
 #---------------------------------------------------#
@@ -29,9 +30,20 @@ def ClickAction():
     EntryBox.delete("0.0",END)
 
 
-    if '/img' in EntryText:
-        s.send("Your partner is sending an image... /img")#do image stuff
+    if '/pin' in EntryText:
+        s.send("Your partner is sending an emojo... /pin")#do image stuff
         #LoadMyEntry(ChatLog, "Please enter the path to your image:")
+        
+        root = Toplevel() #instead of making a new tk, you are supposed to do this to make a new window
+        img = ImageTk.PhotoImage(Image.open("pin.png"))#makes it okay to open all types of images instead of just gifs
+        panel = Label(root, image = img)
+        panel.pack(side = "bottom", fill = "both", expand = "yes")
+        root.mainloop()
+        """root = Tk()
+        img = ImageTk.PhotoImage(Image.open("1.png"))
+        panel = Label(root, image = img)
+        panel.pack(side = "bottom", fill = "both", expand = "yes")
+        root.mainloop()
         tkMessageBox.showinfo(title="Image Transfer", message="Click OK to Select Image")
         Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
         filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
@@ -45,10 +57,42 @@ def ClickAction():
                 break
             fp.write(strng)
         fp.close()
-        LoadMyEntry(ChatLog, " Sending side stopped, problem must be on HOST side")
+        LoadMyEntry(ChatLog, " Sending side stopped, problem must be on HOST side")"""
+    else:
+         s.send(EntryText) #Just send the message
+    if '/smile' in EntryText:
+        s.send("Your partner is sending an emojo... /smile")#do image stuff
+        #LoadMyEntry(ChatLog, "Please enter the path to your image:")
+        
+        root = Toplevel()
+        img = ImageTk.PhotoImage(Image.open("smile.png"))
+        panel = Label(root, image = img)
+        panel.pack(side = "bottom", fill = "both", expand = "yes")
+        root.mainloop() 
     else:
         s.send(EntryText) #Just send the message
-
+    if '/mad' in EntryText:
+        s.send("Your partner is sending an emojo... /mad")#do image stuff
+        #LoadMyEntry(ChatLog, "Please enter the path to your image:")
+        
+        root = Toplevel()
+        img = ImageTk.PhotoImage(Image.open("mad.png"))
+        panel = Label(root, image = img)
+        panel.pack(side = "bottom", fill = "both", expand = "yes")
+        root.mainloop() 
+    else:
+        s.send(EntryText) #Just send the message
+    if '/barf' in EntryText:
+        s.send("Your partner is sending an emojo... /barf")#do image stuff
+        #LoadMyEntry(ChatLog, "Please enter the path to your image:")
+        
+        root = Toplevel()
+        img = ImageTk.PhotoImage(Image.open("barf.png"))
+        panel = Label(root, image = img)
+        panel.pack(side = "bottom", fill = "both", expand = "yes")
+        root.mainloop() 
+    else:
+        s.send(EntryText) #Just send the message
 #---------------------------------------------------#
 #----------------- KEYBOARD EVENTS -----------------#
 #---------------------------------------------------#
