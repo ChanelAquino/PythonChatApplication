@@ -1,131 +1,106 @@
 # -*- coding: utf-8 -*-
 
+from Tkinter import *
+from chat import *
+from PIL import *
 import thread
 import tkMessageBox
 from tkFileDialog import askopenfilename
-from chat_functions import *
-from PIL import Image
 
-#---------------------------------------------------#
-#---------INITIALIZE CONNECTION VARIABLES-----------#
-#---------------------------------------------------#
-WindowTitle = 'Pychat Client'
+
+
 HOST = gethostname()
-PORT = 9002
+PORT = 9003
 s = socket(AF_INET, SOCK_STREAM)
 
-#---------------------------------------------------#
-#------------------ MOUSE EVENTS -------------------#
-#---------------------------------------------------#
-def ClickAction():
-    #Write message to chat window
-    EntryText = FilteredMessage(EntryBox.get("0.0",END))
-    LoadMyEntry(ChatLog, EntryText)
+def onClick():
+    messageText = messageFilter(textBox.get("0.0",END)) #filter
 
-    #Scroll to the bottom of chat windows
-    ChatLog.yview(END)
+    if "/shrug" in messageText :
+        messageText =  "¯\_(ツ)_/¯"
+        s.send(messageText)
 
-    #Erace previous message in Entry Box
-    EntryBox.delete("0.0",END)
-
-
-    if '/img' in EntryText:
+    elif "/creep" in messageText :
+        messageText = "( ͡° ͜ʖ ͡°)"
+        s.send(messageText) #Just send the message
+    elif "/smile" in messageText :
+        messageText = "•ᴗ•"
+        s.send(messageText) #Just send the message
+    elif "/what" in messageText :
+        messageText = "ლ(ಠ_ಠლ)"
+        s.send(messageText) #Just send the message
+    elif "/img" in messageText :
         s.send("Your partner is sending an image... /img")#do image stuff
-        #LoadMyEntry(ChatLog, "Please enter the path to your image:")
         tkMessageBox.showinfo(title="Image Transfer", message="Click OK to Select Image")
         Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
         filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
-        LoadMyEntry(ChatLog, "You selected " + filename)
-        s.send(filename)
-        fp = Image.open(filename)
-        LoadMyEntry(ChatLog, "Starting image transfer...")
-        while True:
-            strng = s.recv(512)
-            if not strng:
-                break
-            fp.write(strng)
-        fp.close()
-        LoadMyEntry(ChatLog, " Sending side stopped, problem must be on HOST side")
+        Image.open(filename).show()
     else:
-        s.send(EntryText) #Just send the message
+        s.send(messageText) #send over socket
 
-#---------------------------------------------------#
-#----------------- KEYBOARD EVENTS -----------------#
-#---------------------------------------------------#
-def PressAction(event):
-	EntryBox.config(state=NORMAL)
-	ClickAction()
-def DisableEntry(event):
-	EntryBox.config(state=DISABLED)
+    displayLocalMessage(chatBox, messageText) #display local
+    chatBox.yview(END) #auto-scroll
+    textBox.delete("0.0",END) #clear the input box
 
+def onEnterButtonPressed(event):
+    textBox.config(state=NORMAL)
+    onClick()
 
-#---------------------------------------------------#
-#-----------------GRAPHICS MANAGEMENT---------------#
-#---------------------------------------------------#
-
-#Create a window
-base = Tk()
-base.title(WindowTitle)
-base.geometry("400x500")
-base.resizable(width=FALSE, height=FALSE)
-base.configure(bg="#716664")
-
-#Create a Chat window
-ChatLog = Text(base, bd=0, bg="#42737E", height="8", width="50", font="Helvetica",)
-ChatLog.insert(END, "Connecting to your partner..\n")
-ChatLog.config(state=DISABLED)
-
-#Bind a scrollbar to the Chat window
-scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="heart")
-ChatLog['yscrollcommand'] = scrollbar.set
-
-#Create the Button to send message
-SendButton = Button(base, font="Helvetica", text="SEND", width="50", height=5,
-                    bd=0, bg="#8DB85D", activebackground="#8DB85D", justify="center",
-                    command=ClickAction)
-
-#Create the box to enter message
-EntryBox = Text(base, bd=0, bg="#CC7967",width="29", height="5", font="Courier")
-EntryBox.bind("<Return>", DisableEntry)
-EntryBox.bind("<KeyRelease-Return>", PressAction)
-
-#Place all components on the screen
-scrollbar.place(x=376,y=6, height=386)
-ChatLog.place(x=6,y=6, height=386, width=370)
-SendButton.place(x=128, y=401, height=90)
-EntryBox.place(x=6, y=401, height=90, width=265)
-
-
-#---------------------------------------------------#
-#----------------CONNECTION MANAGEMENT--------------#
-#---------------------------------------------------#
+def removeKeyboardFocus(event):
+	textBox.config(state=DISABLED)
 
 def ReceiveData():
     try:
         s.connect((HOST, PORT))
-        LoadConnectionInfo(ChatLog, '[ Succesfully connected ]\n-------------------------------------')
+        getConnectionInfo(chatBox, '[ Connected! ]\n-------------------------------------')
     except:
-        LoadConnectionInfo(ChatLog, '[ Unable to connect ]')
+        getConnectionInfo(chatBox, '[ Cannot connect ]')
         return
 
     while 1:
         try:
             data = s.recv(1024)
         except:
-            LoadConnectionInfo(ChatLog, '\n [ Your partner has disconnected ] \n')
+            getConnectionInfo(chatBox, '\n [ Your partner left.] \n')
             break
         if data != '':
-            LoadOtherEntry(ChatLog, data)
-            #if base.focus_get() == None:
-            #    FlashMyWindow(WindowTitle)
-            #    playsound('notif.wav')
+            displayRemoteMessage(chatBox, data)
 
         else:
-            LoadConnectionInfo(ChatLog, '\n [ Your partner has disconnected ] \n')
+            getConnectionInfo(chatBox, '\n [ Your partner left. ] \n')
             break
     s.close()
 
 
-thread.start_new_thread(ReceiveData,())
+#Base Window
+base = Tk()
+base.title("Pychat Client")
+base.geometry("400x450")
+base.resizable(width=FALSE, height=FALSE)
+base.configure(bg="#716664")
 
+#Chat
+chatBox = Text(base, bd=0, bg="#689099", height="8", width="20", font="Helvetica",)
+chatBox.insert(END, "Waiting for your partner to connect..\n")
+chatBox.config(state=DISABLED)
+sb = Scrollbar(base, command=chatBox.yview, bg = "#34495e")
+chatBox['yscrollcommand'] = sb.set
+
+#Send Button
+sendButton = Button(base, font="Helvetica", text="SEND", width="50", height=5,
+                    bd=0, bg="#BDE096", activebackground="#BDE096", justify="center",
+                    command=onClick)
+
+#Text Input
+textBox = Text(base, bd=0, bg="#F8B486",width="29", height="5", font="Helvetica")
+textBox.bind("<Return>", removeKeyboardFocus)
+textBox.bind("<KeyRelease-Return>", onEnterButtonPressed)
+
+#Put everything on the window
+sb.place(x=370,y=5, height=350)
+chatBox.place(x=15,y=5, height=350, width=355)
+sendButton.place(x=255, y=360, height=80, width=130)
+textBox.place(x=15, y=360, height=80, width=250)
+
+thread.start_new_thread(ReceiveData,())
 base.mainloop()
