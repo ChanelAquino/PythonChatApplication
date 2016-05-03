@@ -13,8 +13,6 @@ Our group intends to utilize Python's networking capabilities along with Pillow 
   1. Become familiar with Pillow.
   2. Become familiar with networks in Python.
   3. Become familiar with Tkinter library for Graphical User Interface (GUI).
-  4. ???: to implement GUI
-  5. [...]
 
 2.  Development
   1. Create design prototype.
