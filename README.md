@@ -25,4 +25,4 @@ Our group intends to utilize Python's networking capabilities along with Pillow 
 
 
 ##DEMONSTRATION
-![ScreenShot](blob:https%3A//drive.google.com/d629c11b-6080-491d-904a-a780e93d8739)
+![ScreenShot](http://i66.tinypic.com/6zq2d0.png)
